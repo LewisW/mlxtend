@@ -13,6 +13,8 @@ class _BaseStackingClassifier(ClassifierMixin):
 
         if not self.use_features_in_secondary:
             return predict_fn(meta_features)
+        elif isinstance(X, pd.DataFrame):
+            return predict_fn(pd.concat([X, pd.DataFrame(meta_features, index=X.index)], axis=1))
         elif sparse.issparse(X):
             return predict_fn(sparse.hstack((X, meta_features)))
         else:
