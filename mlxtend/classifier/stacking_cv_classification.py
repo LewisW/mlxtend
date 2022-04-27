@@ -348,7 +348,7 @@ class StackingCVClassifier(_BaseXComposition, _BaseStackingClassifier,
 
     def _stack_first_level_features(self, X, meta_features):
         if isinstance(X, pd.DataFrame):
-            return pd.concat([X, pd.DataFrame(meta_features)], axis=1)
+            return pd.concat([X, pd.DataFrame(meta_features, index=X.index)], axis=1)
         elif sparse.issparse(X):
             return sparse.hstack((X, meta_features))
         else:
