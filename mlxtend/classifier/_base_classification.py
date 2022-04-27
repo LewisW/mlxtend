@@ -2,7 +2,7 @@ import numpy as np
 from scipy import sparse
 from sklearn.base import ClassifierMixin
 from ..externals.estimator_checks import check_is_fitted
-
+import pandas as pd
 
 class _BaseStackingClassifier(ClassifierMixin):
     """Base class of stacking classifiers
