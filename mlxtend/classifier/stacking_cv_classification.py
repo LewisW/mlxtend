@@ -212,6 +212,12 @@ class StackingCVClassifier(_BaseXComposition, _BaseStackingClassifier,
         if self.verbose > 0:
             print("Fitting %d classifiers..." % (len(self.classifiers)))
 
+        if clf_kwargs is None:
+            clf_kwargs = {}
+
+        if meta_clf_kwargs is None:
+            meta_clf_kwargs = {}
+
         final_cv = check_cv(self.cv, y, classifier=self.stratify)
         if isinstance(self.cv, int):
             # Override shuffle parameter in case of self generated
