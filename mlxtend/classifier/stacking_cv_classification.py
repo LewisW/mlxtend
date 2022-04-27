@@ -14,6 +14,7 @@ from scipy import sparse
 from sklearn.base import TransformerMixin, clone
 from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection._split import check_cv
+import pandas as pd
 
 from ..externals.estimator_checks import check_is_fitted
 from ..externals.name_estimators import _name_estimators
@@ -340,9 +341,9 @@ class StackingCVClassifier(_BaseXComposition, _BaseStackingClassifier,
         return np.hstack(per_model_preds)
 
     def _stack_first_level_features(self, X, meta_features):
-        if sparse.issparse(X):
-            stack_fn = sparse.hstack
+        if isinstance(X, pd.DataFrame):
+            return pd.concat([X, pd.DataFrame(meta_features)], axis=1)
+        elif sparse.issparse(X):
+            return sparse.hstack((X, meta_features))
         else:
-            stack_fn = np.hstack
-
-        return stack_fn((X, meta_features))
+            return np.hstack((X, meta_features))
