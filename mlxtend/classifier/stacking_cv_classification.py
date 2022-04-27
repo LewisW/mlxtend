@@ -176,7 +176,7 @@ class StackingCVClassifier(_BaseXComposition, _BaseStackingClassifier,
     def named_classifiers(self):
         return _name_estimators(self.classifiers)
 
-    def fit(self, X, y, groups=None, sample_weight=None):
+    def fit(self, X, y, groups=None, sample_weight=None, clf_kwargs=None, meta_clf_kwargs=None):
         """ Fit ensemble classifers and the meta-classifier.
 
         Parameters
@@ -271,9 +271,9 @@ class StackingCVClassifier(_BaseXComposition, _BaseStackingClassifier,
         # Fit the base models correctly this time using ALL the training set
         for model in self.clfs_:
             if sample_weight is None:
-                model.fit(X, y)
+                model.fit(X, y, **clf_kwargs)
             else:
-                model.fit(X, y, sample_weight=sample_weight)
+                model.fit(X, y, sample_weight=sample_weight, **clf_kwargs)
 
         # Fit the secondary model
         if self.use_features_in_secondary:
@@ -283,10 +283,10 @@ class StackingCVClassifier(_BaseXComposition, _BaseStackingClassifier,
             )
 
         if sample_weight is None:
-            self.meta_clf_.fit(meta_features, y)
+            self.meta_clf_.fit(meta_features, y, **meta_clf_kwargs)
         else:
             self.meta_clf_.fit(meta_features, y,
-                               sample_weight=sample_weight)
+                               sample_weight=sample_weight, **meta_clf_kwargs)
 
         return self
 
