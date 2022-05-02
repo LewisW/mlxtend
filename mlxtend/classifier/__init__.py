@@ -13,6 +13,7 @@ from .perceptron import Perceptron
 from .softmax_regression import SoftmaxRegression
 from .stacking_classification import StackingClassifier
 from .stacking_cv_classification import StackingCVClassifier
+from .meta_classification import MetaClassifier
 
 __all__ = ["Adaline",
            "EnsembleVoteClassifier",
@@ -22,4 +23,5 @@ __all__ = ["Adaline",
            "Perceptron",
            "SoftmaxRegression",
            "StackingClassifier",
-           "StackingCVClassifier"]
+           "StackingCVClassifier",
+           "MetaClassifier"]
