@@ -226,19 +226,10 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
         """
         check_is_fitted(self, 'clf_')
         if self.use_probas:
-            if self.drop_proba_col == 'last':
-                probas = np.asarray([clf.predict_proba(X)[:, :-1]
+            probas = np.asarray([clf.predict_proba(X)
                                      for clf in self.clf_])
-            elif self.drop_proba_col == 'first':
-                probas = np.asarray([clf.predict_proba(X)[:, 1:]
-                                     for clf in self.clf_])
-            else:
-                probas = np.asarray([clf.predict_proba(X)
-                                     for clf in self.clf_])
-            if self.average_probas:
-                vals = np.average(probas, axis=0)
-            else:
-                vals = np.concatenate(probas, axis=1)
+            
+            vals = np.concatenate(probas, axis=1)
         else:
             vals = np.column_stack([clf.predict(X) for clf in self.clf_])
         return vals
