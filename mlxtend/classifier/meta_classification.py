@@ -178,7 +178,7 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
         else:
             meta_features = np.hstack((X, meta_features))
 
-        metaY = self.clf_.predict(X) == y
+        metaY = np.where(self.clf_.predict(X) == y, 1, 0)
 
         if sample_weight is None:
             self.meta_clf_.fit(meta_features, metaY)
