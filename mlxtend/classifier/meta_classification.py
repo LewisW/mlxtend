@@ -114,7 +114,7 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
     def named_classifier(self):
         return _name_estimators([self.classifier])
 
-    def fit(self, X, y, sample_weight=None):
+    def fit(self, X, y, sample_weight=None, clf_kwargs=None, meta_clf_kwargs=None):
         """ Fit ensemble classifer and the meta-classifier.
 
         Parameters
@@ -147,6 +147,12 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
             self.clf_ = self.classifier
             self.meta_clf_ = self.meta_classifier
 
+        if clf_kwargs is None:
+            clf_kwargs = {}
+
+        if meta_clf_kwargs is None:
+            meta_clf_kwargs = {}
+
         if self.fit_base_estimator:
             if self.verbose > 0:
                 print("Fitting %d classifiers..." % (len(self.classifier)))
@@ -162,9 +168,9 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
             if self.verbose > 1:
                 print(_name_estimators((self.clf_,))[0][1])
             if sample_weight is None:
-                self.clf_.fit(X, y)
+                self.clf_.fit(X, y, **clf_kwargs)
             else:
-                self.clf_.fit(X, y, sample_weight=sample_weight)
+                self.clf_.fit(X, y, sample_weight=sample_weight, **clf_kwargs)
 
         meta_features = self.predict_meta_features(X)
 
@@ -181,9 +187,9 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
         metaY = np.where(self.clf_.predict(X) == y, 1, 0)
 
         if sample_weight is None:
-            self.meta_clf_.fit(meta_features, metaY)
+            self.meta_clf_.fit(meta_features, metaY, **meta_clf_kwargs)
         else:
-            self.meta_clf_.fit(meta_features, metaY, sample_weight=sample_weight)
+            self.meta_clf_.fit(meta_features, metaY, sample_weight=sample_weight, **meta_clf_kwargs)
 
         return self
 
