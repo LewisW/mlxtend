@@ -9,6 +9,7 @@
 # License: BSD 3 clause
 
 import numpy as np
+import pandas as pd
 import warnings
 from scipy import sparse
 from sklearn.base import TransformerMixin, clone
@@ -179,6 +180,8 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
 
         if not self.use_features_in_secondary:
             pass
+        elif isinstance(X, pd.DataFrame):
+            return pd.concat([X, pd.DataFrame(meta_features, index=X.index)], axis=1)
         elif sparse.issparse(X):
             meta_features = sparse.hstack((X, meta_features))
         else:
