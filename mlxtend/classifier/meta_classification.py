@@ -32,7 +32,7 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
         Invoking the `fit` method on the `MetaClassifer` will fit clones
         of this original classifier that will
         be stored in the class attribute
-        `self.clf_` if `use_clones=True` (default) and
+        `self.clfs_` if `use_clones=True` (default) and
         `fit_base_estimator=True` (default).
     meta_classifier : object
         The meta-classifier to be fitted on the ensemble of
@@ -81,7 +81,7 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
 
     Attributes
     ----------
-    clf_ : list, shape=[n_classifier]
+    clfs_ : estimator
         Fitted classifier (clones of the original classifier)
     meta_clf_ : estimator
         Fitted meta-classifier (clone of the original meta-estimator)
@@ -142,10 +142,10 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
             self.use_clones = False
 
         if self.use_clones:
-            self.clf_ = clone(self.classifier)
+            self.clfs_ = clone(self.classifier)
             self.meta_clf_ = clone(self.meta_classifier)
         else:
-            self.clf_ = self.classifier
+            self.clfs_ = self.classifier
             self.meta_clf_ = self.meta_classifier
 
         if clf_kwargs is None:
@@ -157,18 +157,18 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
         if self.fit_base_estimator:
             if self.verbose > 0:
                 print("Fitting classifier: %s" %
-                      (_name_estimators((self.clf_,))[0][0]))
+                      (_name_estimators((self.clfs_,))[0][0]))
 
             if self.verbose > 2:
-                if hasattr(self.clf_, 'verbose'):
-                    self.clf_.set_params(verbose=self.verbose - 2)
+                if hasattr(self.clfs_, 'verbose'):
+                    self.clfs_.set_params(verbose=self.verbose - 2)
 
             if self.verbose > 1:
-                print(_name_estimators((self.clf_,))[0][1])
+                print(_name_estimators((self.clfs_,))[0][1])
             if sample_weight is None:
-                self.clf_.fit(X, y, **clf_kwargs)
+                self.clfs_.fit(X, y, **clf_kwargs)
             else:
-                self.clf_.fit(X, y, sample_weight=sample_weight, **clf_kwargs)
+                self.clfs_.fit(X, y, sample_weight=sample_weight, **clf_kwargs)
 
         meta_features = self.predict_meta_features(X)
 
@@ -184,7 +184,7 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
         else:
             meta_features = np.hstack((X, meta_features))
 
-        metaY = np.where(self.clf_.predict(X) == y, 1, 0)
+        metaY = np.where(self.clfs_.predict(X) == y, 1, 0)
 
         if sample_weight is None:
             self.meta_clf_.fit(meta_features, metaY, **meta_clf_kwargs)
@@ -224,10 +224,10 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
             Returns the meta-features for test data.
 
         """
-        check_is_fitted(self, 'clf_')
+        check_is_fitted(self, 'clfs_')
         if self.use_probas:
-            vals = np.asarray(self.clf_.predict_proba(X))
+            vals = np.asarray(self.clfs_.predict_proba(X))
         else:
-            vals = np.asarray(self.clf_.predict(X))
+            vals = np.asarray(self.clfs_.predict(X))
 
         return vals
