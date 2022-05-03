@@ -156,11 +156,8 @@ class MetaClassifier(_BaseXComposition, _BaseStackingClassifier,
 
         if self.fit_base_estimator:
             if self.verbose > 0:
-                print("Fitting %d classifiers..." % (len(self.classifier)))
-
-            if self.verbose > 0:
-                print("Fitting classifier%d: %s" %
-                      (i, _name_estimators((self.clf_,))[0][0]))
+                print("Fitting classifier: %s" %
+                      (_name_estimators((self.clf_,))[0][0]))
 
             if self.verbose > 2:
                 if hasattr(self.clf_, 'verbose'):
